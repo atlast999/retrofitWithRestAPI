@@ -1,0 +1,63 @@
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: "androidx.navigation.safeargs"
+
+android {
+    compileSdkVersion 30
+    defaultConfig {
+        applicationId "com.example.android.marsrealestate"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+    buildFeatures {
+        dataBinding true
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$version_kotlin"
+
+    // Constraint Layout
+    implementation "androidx.constraintlayout:constraintlayout:2.0.1"
+
+    // ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$version_lifecycle"
+
+    // Navigation
+    implementation "android.arch.navigation:navigation-fragment-ktx:$version_navigation"
+    implementation "android.arch.navigation:navigation-ui-ktx:$version_navigation"
+
+    // Core with Ktx
+    implementation "androidx.core:core-ktx:$version_core"
+
+    //network
+    api "com.squareup.retrofit2:retrofit:$retrofit_version"
+    api "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+
+    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
+
+    //glide
+    implementation "com.github.bumptech.glide:glide:$version_glide"
+    annotationProcessor "com.github.bumptech.glide:compiler:$version_glide"
+}
