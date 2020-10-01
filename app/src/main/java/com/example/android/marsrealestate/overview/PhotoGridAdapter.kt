@@ -9,20 +9,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.android.marsrealestate.databinding.GridViewItemBinding
 import com.example.android.marsrealestate.network.MarsProperty
 
-class PhotoGridAdapter : ListAdapter<MarsProperty, PhotoGridAdapter.ViewHolder>(MarsPropertyDiffCallBack()){
+class PhotoGridAdapter(val itemClickListener: (MarsProperty) -> Unit) : ListAdapter<MarsProperty, PhotoGridAdapter.ViewHolder>(MarsPropertyDiffCallBack()){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(position, getItem(position))
+        holder.bind(position, getItem(position), itemClickListener)
     }
 
     class ViewHolder(private val binding: GridViewItemBinding): RecyclerView.ViewHolder(binding.root){
 
-        fun bind(position: Int, property: MarsProperty){
+        fun bind(position: Int, property: MarsProperty, itemClickListener: (MarsProperty) -> Unit){
             binding.property = property
+            binding.root.setOnClickListener { itemClickListener(property) }
             binding.executePendingBindings()
         }
 

@@ -1,33 +1,19 @@
-/*
- * Copyright 2019, The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 
 package com.example.android.marsrealestate.overview
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.android.marsrealestate.network.MarApiFilter
 import com.example.android.marsrealestate.network.MarsApi
 import com.example.android.marsrealestate.network.MarsProperty
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class OverviewViewModel : ViewModel() {
-
+    private val TAG = "OverviewViewModel"
     private val _apiStatus = MutableLiveData<ApiStatus>()
     val apiStatus: LiveData<ApiStatus>
         get() = _apiStatus
@@ -36,17 +22,27 @@ class OverviewViewModel : ViewModel() {
     val properties: LiveData<List<MarsProperty>>
         get() = _properties
 
-    val adapter = PhotoGridAdapter()
+    private val _clickedProperty = MutableLiveData<MarsProperty>()
+    val clickedProperty: LiveData<MarsProperty>
+        get() = _clickedProperty
+
+    val adapter = PhotoGridAdapter{ _clickedProperty.value = it }
 
     init {
-        getMarsRealEstateProperties()
+        getMarsRealEstateProperties(MarApiFilter.SHOW_ALL)
     }
 
-    private fun getMarsRealEstateProperties() {
+    fun updateFilter(filter: MarApiFilter){
+        getMarsRealEstateProperties(filter)
+        Log.d(TAG, "updateFilter: ${filter.value}")
+    }
+
+    private fun getMarsRealEstateProperties(filter: MarApiFilter) {
         viewModelScope.launch {
             _apiStatus.value = ApiStatus.LOADING
             try {
-                _properties.value = MarsApi.marsService.getProperties()
+                _properties.value = MarsApi.marsService.getProperties(filter.value)
+                Log.d(TAG, "getMarsRealEstateProperties: ${_properties.value!!.any { it.isRental }}")
                 _apiStatus.value = ApiStatus.DONE
             }catch (e: Exception){
                 _apiStatus.value = ApiStatus.ERROR
